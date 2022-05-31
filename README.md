@@ -1,37 +1,82 @@
 # UserModeTcp
 
-#### 介绍
+### 介绍
 用户态协议栈
 
-#### 软件架构
-软件架构说明
+### 软件架构说明
+
+------- Apps(Nginx Redis，lighttpd.）---------
+----------------------------------------------
+----- Posix API ---- Epoll ---- Coroutine ----
+----------------------------------------------
+----------------- TCP/IP Stack ---------------
+----------------------------------------------
+------ UserModeTcp --- DPDK ----- PF_RING ----
+----------------------------------------------
+-------------------- NIC ---------------------
 
 
-#### 安装教程
+### 安装教程
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+#### netmap install
+```
+1.  git clone https://gitee.com/xujunze/netmap.git
+2.  ./configure
+3.  make
+3.  sudo make install
+```
 
-#### 使用说明
+#### netmap install complete.
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1.  problem : configure --> /bin/sh^M.
+```
+you should run . 
+$ dos2unix configure
+$ dos2unix ./LINUX/configure
+```
 
-#### 参与贡献
+2.  problem : cannot stat 'bridge': No such or directory
+```
+$ make clean
+$ cd build-apps/bridge
+$ gcc -O2 -pipe -Werror -Wall -Wunused-function -I ../../sys -I ../../apps/include -Wextra    ../../apps/bridge/bridge.c  -lpthread -lrt    -o bridge
+$ sudo make && make install
+```
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+#### netmap install complete.
+netmap, dpdk, pf_ring, Tcp Stack for Userspace
+
+1. compile:
+```
+$ sudo apt-get install libhugetlbfs-dev
+$ make
+```
+
+2. update include/nty_config.h
+```
+#define NTY_SELF_IP		"192.168.0.106" 	//your ip
+#define NTY_SELF_IP_HEX	0x6A00A8C0 			//your ip hex.
+#define NTY_SELF_MAC	"00:0c:29:58:6f:f4" //your mac
+```
+
+3. update src/nty_eth.c
+```
+int ret = nty_nic_init(tctx, "netmap:wlan0");  //your deviece name
+```
+
+### 使用说明
+1. block server run:
+```
+$ ./bin/nty_example_block_server
+```
+
+2. epoll server run:
+```
+$ ./bin/nty_example_epoll_rb_server
+```
 
 
-#### 特技
-
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+### Reference
+* [Level-IP](https://github.com/saminiir/level-ip) and [saminiir blog](http://www.saminiir.com/)
+* [Linux kernel TCP/IP stack](https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/net/ipv4)
+* [NtyTcp]https://github.com/wangbojing/NtyTcp
