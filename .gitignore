@@ -9,7 +9,6 @@ bin/
 .settings/
 
 # Executables
-*.swf
 *.o
 
 # Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
