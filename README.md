@@ -1,9 +1,25 @@
 # UserModeTcp
 
-### 介绍
-用户态协议栈
+### 一、介绍
 
-### 软件架构说明
+本项目是基于netmap，在用户态实现的网络协议栈，在用户空间实现epoll
+
+#### 背景
+
+C10M问题(并发C10兆)，在千万并发时，2次拷贝，存在过大的开销
+1、客户端的数据，先从网卡，copy到 内核协议栈(TCP/IP协议栈,bsd)
+2、从内核协议栈，copy到应用程序
+把内核的协议栈，做到应用程序，目的是为了减少一次拷贝，即：从网卡直接拷贝到应用程序，中间不经过先拷贝到内核。
+
+#### 千万并发解决方案
+
+基于netmap 实现用户态协议栈，netmap接管网卡eth0
+1、netmap会接管网卡eth0上的数据，直接将网卡上的数据mmap到内存中
+2、数据就不会经过内核了，应用层就可以直接从内存中读取数据
+
+### 二、软件架构说明
+
+netmap, dpdk, pf_ring, Tcp Stack for Userspace
 
 ```
 ------- Apps(Nginx Redis，lighttpd.）---------
@@ -12,14 +28,14 @@
 ----------------------------------------------
 ----------------- TCP/IP Stack ---------------
 ----------------------------------------------
------- UserModeTcp --- DPDK ----- PF_RING ----
+------- Netmap ---- DPDK ------ PF_RING ------
 ----------------------------------------------
 -------------------- NIC ---------------------
 ```
 
-### 安装教程
+### 三、安装教程
 
-#### netmap install
+#### netmap 安装
 ```
 1.  git clone https://gitee.com/xujunze/netmap.git
 2.  ./configure
@@ -27,7 +43,7 @@
 3.  sudo make install
 ```
 
-#### netmap install complete.
+#### netmap 安装中的问题
 
 1.  problem : configure --> /bin/sh^M.
 ```
@@ -44,8 +60,7 @@ $ gcc -O2 -pipe -Werror -Wall -Wunused-function -I ../../sys -I ../../apps/inclu
 $ sudo make && make install
 ```
 
-#### netmap install complete.
-netmap, dpdk, pf_ring, Tcp Stack for Userspace
+### 四、用户态协议栈编译
 
 1. compile:
 ```
@@ -65,7 +80,7 @@ $ make
 int ret = nty_nic_init(tctx, "netmap:wlan0");  //your deviece name
 ```
 
-### 使用说明
+### 五、使用说明
 1. block server run:
 ```
 $ ./bin/nty_example_block_server
@@ -80,4 +95,4 @@ $ ./bin/nty_example_epoll_rb_server
 ### Reference
 * [Level-IP](https://github.com/saminiir/level-ip) and [saminiir blog](http://www.saminiir.com/)
 * [Linux kernel TCP/IP stack](https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/net/ipv4)
-* [NtyTcp]https://github.com/wangbojing/NtyTcp
+* [NtyTcp](https://github.com/wangbojing/NtyTcp)
