@@ -69,16 +69,16 @@ $ sudo make && make install
 $ sudo apt-get install libhugetlbfs-dev
 ```
 
-2. 更新 include/nty_config.h
+2. 更新 include/user_config.h
 ```
-#define NTY_SELF_IP		"192.168.0.106" 	//your ip
-#define NTY_SELF_IP_HEX	0x6A00A8C0 			//your ip hex.
-#define NTY_SELF_MAC	"00:0c:29:58:6f:f4" //your mac
+#define USER_SELF_IP		"192.168.0.106" 	//your ip
+#define USER_SELF_IP_HEX	0x6A00A8C0 			//your ip hex.
+#define USER_SELF_MAC		"00:0c:29:58:6f:f4" //your mac
 ```
 
-3. 更新 src/nty_eth.c
+3. 更新 src/user_eth.c
 ```
-int ret = nty_nic_init(tctx, "netmap:wlan0");  //your deviece name
+int ret = user_nic_init(tctx, "netmap:wlan0");  //your deviece name
 ```
 
 4. 编译:
@@ -89,12 +89,12 @@ $ make
 ### 五、使用说明
 1. 阻塞服务端运行:
 ```
-$ ./bin/nty_example_block_server
+$ ./bin/user_example_block_server
 ```
 
 2. epoll 服务端运行:
 ```
-$ ./bin/nty_example_epoll_rb_server
+$ ./bin/user_example_epoll_rb_server
 ```
 
 
