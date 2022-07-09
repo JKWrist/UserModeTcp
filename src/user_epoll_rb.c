@@ -11,9 +11,17 @@
 
 extern user_tcp_manager *user_get_tcp_manager(void);
 
+/****************************************************************
+ *  函数名称：申请 epoll_create
+ *  创建日期：2022-07-09 18:19:21
+ *  _user_socket 的详细过程、红黑树和双向链表初始化。
+ *  作者：xujunze
+ *  输入参数：无
+ *  输出参数：无
+ *  返回值：无
+******************************************************************/
 int epoll_create(int size)
 {
-
     if (size <= 0)
         return -1;
 
@@ -22,7 +30,7 @@ int epoll_create(int size)
         return -1;
 
     /**
-     * 申请 socket 。
+     * 申请 socket。
     */
     struct _user_socket *epsocket = user_socket_allocate(USER_TCP_SOCK_EPOLL);
     if (epsocket == NULL)
@@ -100,6 +108,16 @@ int epoll_create(int size)
     return epsocket->id;
 }
 
+/****************************************************************
+ *  函数名称：
+ *  创建日期：2022-07-09 18:19:59
+ *  向 epoll 中增加、删除、修改监控的 sokcet 及其对应的事件。
+ *  【实际上就是在红黑树上对节点（包含 socket 和待监控的事件的结构体的指针）进行增删改操作】
+ *  作者：xujunze
+ *  输入参数：无
+ *  输出参数：无
+ *  返回值：无
+******************************************************************/
 int epoll_ctl(int epid, int op, int sockid, struct epoll_event *event)
 {
 
@@ -255,9 +273,18 @@ int epoll_ctl(int epid, int op, int sockid, struct epoll_event *event)
     return 0;
 }
 
+/****************************************************************
+ *  函数名称：epoll_wait
+ *  创建日期：2022-07-09 18:21:09
+ *  从 epoll 中获取就绪事件的过程，即：循环遍历 epoll 的双向链表，
+ *  若双向链表中有了节点，说明有了事件发生，将最多返回指定数目的节点内容。
+ *  作者：xujunze
+ *  输入参数：无
+ *  输出参数：无
+ *  返回值：无
+******************************************************************/
 int epoll_wait(int epid, struct epoll_event *events, int maxevents, int timeout)
 {
-
     user_tcp_manager *tcp = user_get_tcp_manager();
     if (!tcp)
         return -1;
@@ -413,6 +440,16 @@ int epoll_wait(int epid, struct epoll_event *events, int maxevents, int timeout)
     return cnt;
 }
 
+/****************************************************************
+ *  函数名称：epoll_event_callback
+ *  创建日期：2022-07-09 18:22:29
+ *  该函数是回调函数，由网卡驱动调用。当事件来临时会先检查红黑树中是否存在该 socket，
+ *  若存在则将发生的事件放到节点中，最后将该节点放入双向链表中，供 epoll_wait() 调用。
+ *  作者：xujunze
+ *  输入参数：无
+ *  输出参数：无
+ *  返回值：无
+******************************************************************/
 int epoll_event_callback(struct eventpoll *ep, int sockid, uint32_t event)
 {
 
@@ -475,6 +512,15 @@ int epoll_event_callback(struct eventpoll *ep, int sockid, uint32_t event)
     return 0;
 }
 
+/****************************************************************
+ *  函数名称：epoll_destroy
+ *  创建日期：2022-07-09 18:23:08
+ *  遍历双向链表，去掉所有节点。遍历红黑树，free 所有节点。
+ *  作者：xujunze
+ *  输入参数：无
+ *  输出参数：无
+ *  返回值：无
+******************************************************************/
 static int epoll_destroy(struct eventpoll *ep)
 {
     //remove rdlist
