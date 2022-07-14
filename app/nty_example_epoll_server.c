@@ -20,8 +20,8 @@
 #define EPOLL_SIZE		5
 #define BUFFER_LENGTH	1024
 
-int main() {
-
+int main()
+{
 	user_tcp_setup();
 
 	usleep(1);
