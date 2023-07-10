@@ -75,7 +75,8 @@ void user_mempool_destory(user_mempool *mp)
     if (mp->mp_type == MEM_HUGEPAGE)
     {
         free_huge_pages(mp->mp_startptr);
-    } else
+    }
+    else
     {
         free(mp->mp_startptr);
     }
@@ -108,7 +109,6 @@ void *user_mempool_alloc(user_mempool *mp)
 
     return p;
 }
-
 
 void user_mempool_free(user_mempool *mp, void *p)
 {

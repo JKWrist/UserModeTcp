@@ -1,7 +1,6 @@
 #ifndef __USER_CONFIG_H__
 #define __USER_CONFIG_H__
 
-
 #define USER_SELF_IP        "192.168.0.107"//"192.168.1.108" //"192.168.1.132" //"192.168.1.131"  //
 #define USER_SELF_IP_HEX    0x6B00A8C0 //0x8301A8C0 //
 #define USER_SELF_MAC        "00:0c:29:58:6f:f4"
@@ -50,6 +49,5 @@
 #endif
 
 #define UNUSED(expr)    do {(void)(expr); } while(0)
-
 
 #endif

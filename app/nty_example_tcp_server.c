@@ -5,19 +5,15 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
-
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
-
 #include <sys/socket.h>
 #include <sys/types.h>
-
 
 #define BUFFER_LENGTH 1024
 
 int main()
 {
-
     user_tcp_setup();
 
     usleep(1);
@@ -59,8 +55,6 @@ int main()
 
     while (1)
     {
-
-
         char buffer[BUFFER_LENGTH] = {0};
         int ret = user_recv(clientfd, buffer, BUFFER_LENGTH, 0);
         if (ret < 0)
@@ -79,6 +73,5 @@ int main()
     }
 
     printf("Exit\n");
-
     return 0;
 }

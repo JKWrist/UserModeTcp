@@ -20,7 +20,6 @@ typedef enum
     USER_EPOLLRDHUP = 0x2000,
     USER_EPOLLONESHOT = (1 << 30),
     USER_EPOLLET = (1 << 31)
-
 } user_epoll_type;
 
 
@@ -30,7 +29,6 @@ typedef enum
     USER_EPOLL_CTL_DEL = 2,
     USER_EPOLL_CTL_MOD = 3,
 } user_epoll_op;
-
 
 typedef union _user_epoll_data
 {
@@ -48,11 +46,8 @@ typedef struct
 
 
 int user_epoll_create(int size);
-
 int user_epoll_ctl(int epid, int op, int sockid, user_epoll_event *event);
-
 int user_epoll_wait(int epid, user_epoll_event *events, int maxevents, int timeout);
-
 
 #if USER_ENABLE_EPOLL_RB
 
@@ -72,7 +67,6 @@ enum EPOLL_EVENTS
     EPOLLRDHUP = 0x2000,
     EPOLLONESHOT = (1 << 30),
     EPOLLET = (1 << 31)
-
 };
 
 #define EPOLL_CTL_ADD    1

@@ -159,7 +159,8 @@ user_addr_pool *CreateAddressPoolPerCore(int core, int num_queues,
     ap->num_used = 0;
     //fprintf(stderr, "CPU %d: Created %d address entries.\n", core, cnt);
 #if 0
-    if (ap->num_entry < CONFIG.max_concurrency) {
+    if (ap->num_entry < CONFIG.max_concurrency)
+    {
         fprintf(stderr, "[WARINING] Available # addresses (%d) is smaller than"
                 " the max concurrency (%d).\n",
                 ap->num_entry, CONFIG.max_concurrency);
@@ -341,7 +342,8 @@ static void BuildKeyCache(uint32_t *cache, int cache_len)
 #define NBBY 8 /* number of bits per byte */
 
     /* Keys for system testing */
-    static const uint8_t key[] = {
+    static const uint8_t key[] =
+    {
             0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05,
             0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05,
             0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05, 0x05,
@@ -420,8 +422,7 @@ static uint32_t GetRSSHash(in_addr_t sip, in_addr_t dip, in_port_t sp, in_port_t
 /* val: 3 2 1 0 | 7 6 5 4 | 11 10 9 8 | 15 14 13 12 | 19 18 17 16 ...*/
 /* qid = val % num_queues */
 /*-------------------------------------------------------------------*/
-int GetRSSCPUCore(in_addr_t sip, in_addr_t dip,
-              in_port_t sp, in_port_t dp, int num_queues, uint8_t endian_check)
+int GetRSSCPUCore(in_addr_t sip, in_addr_t dip, in_port_t sp, in_port_t dp, int num_queues, uint8_t endian_check)
 {
 #define RSS_BIT_MASK 0x0000007F
     uint32_t masked = GetRSSHash(sip, dip, sp, dp) & RSS_BIT_MASK;

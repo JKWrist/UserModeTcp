@@ -2,7 +2,6 @@
 #include "user_timer.h"
 #include "user_tcp.h"
 
-
 extern void DestroyTcpStream(user_tcp_manager *tcp, user_tcp_stream *stream);
 
 user_rto_hashstore *InitRTOHashstore(void)

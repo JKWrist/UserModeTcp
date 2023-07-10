@@ -14,7 +14,6 @@ char *event_str[] = {"NONE", "IN", "PRI", "OUT", "ERR", "HUP", "RDHUP"};
 
 char *EventToString(uint32_t event)
 {
-
     switch (event)
     {
         case USER_EPOLLNONE:
@@ -83,7 +82,6 @@ void user_destory_event_queue(user_event_queue *eq)
 
 int user_close_epoll_socket(int epid)
 {
-
     user_tcp_manager *tcp = user_get_tcp_manager();
     if (!tcp)
         return -1;
@@ -109,7 +107,6 @@ int user_close_epoll_socket(int epid)
     pthread_mutex_destroy(&ep->epoll_lock);
 
     free(ep);
-
     return 0;
 }
 
@@ -155,7 +152,6 @@ int user_epoll_flush_events(uint32_t cur_ts)
     }
 
     pthread_mutex_unlock(&ep->epoll_lock);
-
     return 0;
 }
 
@@ -218,13 +214,11 @@ int user_epoll_add_event(user_epoll *ep, int queue_type, struct _user_socket_map
     }
 
     ep->stat.registered++;
-
     return 0;
 }
 
 int user_raise_pending_stream_events(user_epoll *ep, user_socket_map *socket)
 {
-
     user_tcp_stream *stream = socket->stream;
     if (!stream)
     {

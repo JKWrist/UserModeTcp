@@ -1,25 +1,15 @@
 #include "user_api.h"
-
 #include "user_epoll.h"
 
 #include <stdint.h>
-
 #include <stdio.h>
-
 #include <stdlib.h>
-
 #include <string.h>
-
 #include <unistd.h>
-
 #include <errno.h>
-
 #include <netinet/tcp.h>
-
 #include <arpa/inet.h>
-
 #include <sys/socket.h>
-
 #include <sys/types.h>
 
 #if (USER_ENABLE_EPOLL_RB == 0)
@@ -119,7 +109,8 @@ int main()
                     epoll_ctl(epoll_fd, USER_EPOLL_CTL_DEL, clientfd, &ev);
 
                     close(clientfd);
-                } else if (ret == 0)
+                }
+                else if (ret == 0)
                 {
                     printf(" disconnect %d\n", clientfd);
 
@@ -132,7 +123,8 @@ int main()
                     printf(" delete clientfd %d\n", clientfd);
 
                     break;
-                } else
+                }
+                else
                 {
                     printf("Recv: %s, %d Bytes\n", buffer, ret);
                     send(clientfd, buffer, ret, 0);

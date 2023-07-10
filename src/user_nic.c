@@ -9,7 +9,6 @@
 
 int user_nic_init(user_thread_context *tctx, const char *ifname)
 {
-
     if (tctx == NULL)
         return -1;
 
@@ -33,7 +32,6 @@ int user_nic_init(user_thread_context *tctx, const char *ifname)
 
 int user_nic_read(user_nic_context *ctx, unsigned char **stream)
 {
-
     if (ctx == NULL)
         return -1;
 
@@ -45,7 +43,6 @@ int user_nic_read(user_nic_context *ctx, unsigned char **stream)
 
 int user_nic_write(user_nic_context *ctx, const void *stream, int length)
 {
-
     if (ctx == NULL)
         return -1;
     if (stream == NULL)
@@ -54,13 +51,11 @@ int user_nic_write(user_nic_context *ctx, const void *stream, int length)
         return 0;
 
     nm_inject(ctx->nmr, stream, length);
-
     return 0;
 }
 
 int user_nic_send_pkts(user_nic_context *ctx, int nif)
 {
-
     if (ctx->snd_pkt_size == 0)
         return -1;
 
@@ -91,7 +86,6 @@ unsigned char *user_nic_get_wbuffer(user_nic_context *ctx, int nif, uint16_t pkt
 
 int user_nic_recv_pkts(user_nic_context *ctx, int ifidx)
 {
-
     assert(ctx != NULL);
 
     int n = ctx->nmr->last_rx_ring - ctx->nmr->first_rx_ring + 1;
@@ -134,7 +128,6 @@ unsigned char *user_nic_get_rbuffer(user_nic_context *ctx, int nif, uint16_t *le
 
 int user_nic_select(user_nic_context *ctx)
 {
-
     int rc = 0;
 
     struct pollfd pfd = {0};

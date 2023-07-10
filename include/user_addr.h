@@ -16,7 +16,6 @@
 #define INPORT_ANY    (uint16_t)0
 #endif
 
-
 typedef struct _user_addr_entry
 {
     struct sockaddr_in addr;

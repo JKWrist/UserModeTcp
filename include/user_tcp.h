@@ -345,7 +345,6 @@ typedef struct _user_tcp_manager
     struct _user_socket_map *smap;
     TAILQ_HEAD(, _user_socket_map) free_smap;
 
-
     struct _user_addr_pool *ap;
     uint32_t gid;
     uint32_t flow_cnt;
@@ -437,5 +436,3 @@ void RaiseCloseEvent(user_tcp_manager *tcp, user_tcp_stream *stream);
 void RaiseErrorEvent(user_tcp_manager *tcp, user_tcp_stream *stream);
 
 #endif
-
-

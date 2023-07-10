@@ -48,7 +48,6 @@ char *TCPStateToString(user_tcp_stream *stream)
     return state_str[stream->state];
 }
 
-
 void InitializeTCPStreamManager()
 {
     next_seed = time(NULL);
@@ -320,10 +319,8 @@ user_tcp_stream *CreateTcpStream(user_tcp_manager *tcp, struct _user_socket_map 
            sa[0], sa[1], sa[2], sa[3], ntohs(stream->sport),
            da[0], da[1], da[2], da[3], ntohs(stream->dport),
            stream->snd->iss);
-
     return stream;
 }
-
 
 void DestroyTcpStream(user_tcp_manager *tcp, user_tcp_stream *stream)
 {

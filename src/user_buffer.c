@@ -31,7 +31,6 @@ user_sb_manager *user_sbmanager_create(size_t chunk_size, uint32_t cnum)
     return sbm;
 }
 
-
 user_send_buffer *SBInit(user_sb_manager *sbm, uint32_t init_seq)
 {
     user_send_buffer *buf;
@@ -94,7 +93,8 @@ size_t SBPut(user_sb_manager *sbm, user_send_buffer *buf, const void *data, size
         /* if the data fit into the buffer, copy it */
         memcpy(buf->data + buf->tail_off, data, to_put);
         buf->tail_off += to_put;
-    } else
+    }
+    else
     {
         /* if buffer overflows, move the existing payload and merge */
         memmove(buf->data, buf->head, buf->len);
@@ -137,10 +137,7 @@ size_t SBRemove(user_sb_manager *sbm, user_send_buffer *buf, size_t len)
     return to_remove;
 }
 
-
 /*** ******************************** sb queue ******************************** ***/
-
-
 user_sb_queue *CreateSBQueue(int capacity)
 {
     user_sb_queue *sq;
@@ -176,7 +173,6 @@ void DestroySBQueue(user_sb_queue *sq)
 
     free(sq);
 }
-
 
 int SBEnqueue(user_sb_queue *sq, user_send_buffer *buf)
 {
@@ -271,8 +267,7 @@ int RBFragEnqueue(user_rb_frag_queue *rb_fragq, user_fragment_ctx *frag)
 }
 
 /*---------------------------------------------------------------------------*/
-struct _user_fragment_ctx *
-RBFragDequeue(user_rb_frag_queue *rb_fragq)
+struct _user_fragment_ctx * RBFragDequeue(user_rb_frag_queue *rb_fragq)
 {
     index_type h = rb_fragq->_head;
     index_type t = rb_fragq->_tail;
@@ -319,7 +314,7 @@ void RBPrintHex(user_ring_buffer *buff)
     printf("\n");
 }
 
-user_rb_manager *RBManagerCreate(size_t chunk_size, uint32_t cnum)
+user_rb_manager * RBManagerCreate(size_t chunk_size, uint32_t cnum)
 {
     user_rb_manager *rbm = (user_rb_manager *) calloc(1, sizeof(user_rb_manager));
 
@@ -425,7 +420,7 @@ static user_fragment_ctx *AllocateFragmentContext(user_rb_manager *rbm)
     return frag;
 }
 
-user_ring_buffer *RBInit(user_rb_manager *rbm, uint32_t init_seq)
+user_ring_buffer * RBInit(user_rb_manager *rbm, uint32_t init_seq)
 {
     user_ring_buffer *buff = (user_ring_buffer *) calloc(1, sizeof(user_ring_buffer));
 
@@ -444,14 +439,11 @@ user_ring_buffer *RBInit(user_rb_manager *rbm, uint32_t init_seq)
     }
 
     //memset(buff->data, 0, rbm->chunk_size);
-
     buff->size = rbm->chunk_size;
     buff->head = buff->data;
     buff->head_seq = init_seq;
     buff->init_seq = init_seq;
-
     rbm->cur_num++;
-
     return buff;
 }
 
@@ -473,7 +465,6 @@ void RBFree(user_rb_manager *rbm, user_ring_buffer *buff)
 
     free(buff);
 }
-
 
 #define MAXSEQ               ((uint32_t)(0xFFFFFFFF))
 
@@ -593,7 +584,8 @@ int RBPut(user_rb_manager *rbm, user_ring_buffer *buff,
             FreeFragmentContextSingle(rbm, new_ctx);
             new_ctx = iter;
             merged = 1;
-        } else if (merged ||
+        }
+        else if (merged ||
                    GetMaxSeq(cur_seq + len, iter->seq) == iter->seq)
         {
             /* merged at some point, but no more mergeable
@@ -607,12 +599,14 @@ int RBPut(user_rb_manager *rbm, user_ring_buffer *buff,
         if (buff->fctx == NULL)
         {
             buff->fctx = new_ctx;
-        } else if (GetMinSeq(cur_seq, buff->fctx->seq) == cur_seq)
+        }
+        else if (GetMinSeq(cur_seq, buff->fctx->seq) == cur_seq)
         {
             /* if the new packet's seqnum is before the existing fragments */
             new_ctx->next = buff->fctx;
             buff->fctx = new_ctx;
-        } else
+        }
+        else
         {
             /* if the seqnum is in-between the fragments or
                at the last */
@@ -622,6 +616,7 @@ int RBPut(user_rb_manager *rbm, user_ring_buffer *buff,
             new_ctx->next = iter;
         }
     }
+
     if (buff->head_seq == buff->fctx->seq)
     {
         buff->cum_len += buff->fctx->len - buff->merged_len;
@@ -660,15 +655,18 @@ size_t RBRemove(user_rb_manager *rbm, user_ring_buffer *buff, size_t len, int op
         if (option == AT_APP)
         {
             RBFragEnqueue(rbm->free_fragq, remove);
-        } else if (option == AT_MTCP)
+        }
+        else if (option == AT_MTCP)
         {
             RBFragEnqueue(rbm->free_fragq_int, remove);
         }
-    } else if (len < buff->fctx->len)
+    }
+    else if (len < buff->fctx->len)
     {
         buff->fctx->seq += len;
         buff->fctx->len -= len;
-    } else
+    }
+    else
     {
         assert(0);
     }

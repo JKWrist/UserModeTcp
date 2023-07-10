@@ -10,7 +10,6 @@
 #include <sys/poll.h>
 #include "user_config.h"
 
-
 #define ETH_ALEN        6
 #define IP_HEADER_LEN        20
 #define TCP_HEADER_LEN        20
@@ -22,7 +21,6 @@
 #define PROTO_TCP    6
 #define PROTO_ICMP    1
 #define PROTO_IGMP    2
-
 
 struct ethhdr
 {
@@ -62,7 +60,6 @@ struct udppkt
     unsigned char body[128];
 } __attribute__ ((packed));
 
-
 struct tcphdr
 {
     unsigned short source;
@@ -98,7 +95,6 @@ struct arphdr
     unsigned int dip;
 } __attribute__ ((packed));
 
-
 struct icmphdr
 {
     unsigned char type;
@@ -109,7 +105,6 @@ struct icmphdr
     unsigned char data[32];
 } __attribute__ ((packed));
 
-
 struct icmppkt
 {
     struct ethhdr eh;
@@ -118,7 +113,5 @@ struct icmppkt
 } __attribute__ ((packed));
 
 //unsigned short in_cksum(unsigned short *addr, int len);
-
-
 
 #endif

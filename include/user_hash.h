@@ -1,12 +1,10 @@
 #ifndef __USER_HASH_H__
 #define __USER_HASH_H__
 
-
-#include <stdint.h>
-
 #include "user_queue.h"
 //#include "user_tcp.h"
 
+#include <stdint.h>
 
 #define NUM_BINS_FLOWS        131072
 #define NUM_BINS_LISTENERS    1024
@@ -20,7 +18,7 @@ typedef struct hash_bucket_head {
 #else
 
 #define HASH_BUCKET_ENTRY(type)    \
-    struct {                    \
+    struct {                       \
         struct type *tqh_first;    \
         struct type **tqh_last;    \
     }
@@ -52,31 +50,20 @@ typedef struct _user_hashtable
     int (*eqfn)(const void *, const void *);
 } user_hashtable;
 
-
 void *ListenerHTSearch(user_hashtable *ht, const void *it);
-
 void *StreamHTSearch(user_hashtable *ht, const void *it);
-
 int ListenerHTInsert(user_hashtable *ht, void *it);
-
 int StreamHTInsert(user_hashtable *ht, void *it);
-
 void *StreamHTRemove(user_hashtable *ht, void *it);
 
-
 unsigned int HashFlow(const void *f);
-
 int EqualFlow(const void *f1, const void *f2);
-
 unsigned int HashListener(const void *l);
-
 int EqualListener(const void *l1, const void *l2);
-
 user_hashtable *CreateHashtable(unsigned int (*hashfn)(const void *), // key function
                                 int (*eqfn)(const void *, const void *),            // equality
                                 int bins);
 
 void DestroyHashtable(user_hashtable *ht);
-
 
 #endif

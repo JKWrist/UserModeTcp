@@ -35,10 +35,8 @@ static inline int user_tcp_stream_cmp(user_tcp_stream *ts1, user_tcp_stream *ts2
     assert(0);
 }
 
-
 static inline int user_tcp_timer_cmp(user_tcp_stream *ts1, user_tcp_stream *ts2)
 {
-
     if (ts1->interval < ts2->interval)
     {
         return -1;
@@ -102,7 +100,8 @@ static inline uint16_t user_calculate_option(uint8_t flags)
         optlen += USER_TCPOPT_TIMESTAMP_LEN;
         optlen += 2;
         optlen += USER_TCPOPT_WSCALE_LEN + 1;
-    } else
+    }
+    else
     {
         optlen += USER_TCPOPT_TIMESTAMP_LEN;
         optlen += 2;
@@ -185,7 +184,8 @@ static void user_tcp_generate_options(user_tcp_stream *cur_stream, uint32_t cur_
 
         tcpopt[i++] = cur_stream->snd->wscale_mine;
 
-    } else
+    }
+    else
     {
         tcpopt[i++] = TCP_OPT_NOP;
         tcpopt[i++] = TCP_OPT_NOP;
@@ -342,7 +342,8 @@ void user_tcp_parse_options(user_tcp_stream *cur_stream, uint32_t cur_ts, uint8_
         else
         {
             optlen = *(tcpopt + i++);
-            if (i + optlen - 2 > (unsigned int) len) break;
+            if (i + optlen - 2 > (unsigned int) len)
+                break;
 
             if (opt == TCP_OPT_MSS)
             {
@@ -369,7 +370,6 @@ void user_tcp_parse_options(user_tcp_stream *cur_stream, uint32_t cur_ts, uint8_
                 cur_stream->rcv->ts_recent = ntohl(*(uint32_t * )(tcpopt + i));
                 cur_stream->rcv->ts_last_ts_upd = cur_ts;
                 i += 8;
-
             }
             else
             {
@@ -377,7 +377,6 @@ void user_tcp_parse_options(user_tcp_stream *cur_stream, uint32_t cur_ts, uint8_
             }
         }
     }
-
 }
 
 void user_tcp_enqueue_acklist(user_tcp_manager *tcp, user_tcp_stream *cur_stream, uint32_t cur_ts, uint8_t opt)
@@ -413,10 +412,8 @@ void user_tcp_enqueue_acklist(user_tcp_manager *tcp, user_tcp_stream *cur_stream
     user_tcp_addto_acklist(tcp, cur_stream);
 }
 
-
 int user_tcp_parse_timestamp(user_tcp_timestamp *ts, uint8_t *tcpopt, int len)
 {
-
     int i;
     unsigned int opt, optlen;
 
@@ -451,7 +448,6 @@ int user_tcp_parse_timestamp(user_tcp_timestamp *ts, uint8_t *tcpopt, int len)
             }
         }
     }
-
     return 0;
 }
 
@@ -461,7 +457,6 @@ int user_tcppkt_alone(user_tcp_manager *tcp,
                       uint8_t *payload, uint16_t payloadlen,
                       uint32_t cur_ts, uint32_t echo_ts)
 {
-
     int optlen = user_calculate_option(flags);
     if (payloadlen > TCP_DEFAULT_MSS + optlen)
     {
@@ -532,7 +527,6 @@ int user_tcppkt_alone(user_tcp_manager *tcp,
 int user_tcp_send_tcppkt(user_tcp_stream *cur_stream,
                          uint32_t cur_ts, uint8_t flags, uint8_t *payload, uint16_t payloadlen)
 {
-
     uint16_t optlen = user_calculate_option(flags);
 
     user_trace_tcp("payload:%d, mss:%d, optlen:%d, data:%s\n", payloadlen, cur_stream->snd->mss, optlen, payload);
@@ -2531,7 +2525,7 @@ int user_tcp_flush_sendbuffer(user_tcp_stream *cur_stream, uint32_t cur_ts)
         window -= len;
     }
 
-    out:
+out:
     pthread_mutex_unlock(&snd->write_lock);
 
     return packets;
@@ -2765,7 +2759,6 @@ int user_tcp_write_datalist(user_sender *sender, uint32_t cur_ts, int thresh)
 
 int user_tcp_write_acklist(user_sender *sender, uint32_t cur_ts, int thresh)
 {
-
     user_tcp_manager *tcp = user_get_tcp_manager();
     assert(tcp != NULL);
 

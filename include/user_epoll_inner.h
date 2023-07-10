@@ -11,7 +11,6 @@ typedef struct _user_epoll_stat
     uint64_t calls;
     uint64_t waits;
     uint64_t wakes;
-
     uint64_t issued;
     uint64_t registered;
     uint64_t invalidated;
@@ -57,7 +56,6 @@ int user_epoll_add_event(user_epoll *ep, int queue_type, struct _user_socket_map
 int user_close_epoll_socket(int epid);
 int user_epoll_flush_events(uint32_t cur_ts);
 
-
 #if USER_ENABLE_EPOLL_RB
 
 struct epitem
@@ -79,38 +77,26 @@ static int sockfd_cmp(struct epitem *ep1, struct epitem *ep2)
 
 
 RB_HEAD(_epoll_rb_socket, epitem);
-
 RB_GENERATE_STATIC(_epoll_rb_socket, epitem, rbn, sockfd_cmp);
 
 typedef struct _epoll_rb_socket ep_rb_tree;
-
 
 struct eventpoll
 {
     ep_rb_tree rbr;
     int rbcnt;
-
     LIST_HEAD(, epitem) rdlist;
     int rdnum;
-
     int waiting;
-
     pthread_mutex_t mtx; //rbtree update
     pthread_spinlock_t lock; //rdlist update
 
     pthread_cond_t cond; //block for event
     pthread_mutex_t cdmtx; //mutex for cond
-
 };
-
 
 int epoll_event_callback(struct eventpoll *ep, int sockid, uint32_t event);
 
-
 #endif
 
-
 #endif
-
-
-

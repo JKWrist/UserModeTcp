@@ -60,12 +60,10 @@ int user_nic_select(user_nic_context *ctx);
 extern user_nic_handler user_netmap_handler;
 static user_nic_handler *user_current_handler = &user_netmap_handler;
 
-
 #define USER_NIC_INIT(x, y)				user_current_handler->init(x, y)
 #define USER_NIC_WRITE(x, y, z)			user_current_handler->write(x, y, z)
 #define USER_NIC_READ(x, y)				user_current_handler->read(x, y)
 #define USER_NIC_GET_WBUFFER(x, y, z) 	user_current_handler->get_wbuffer(x, y, z)
 #endif
-
 
 #endif

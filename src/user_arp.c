@@ -8,6 +8,8 @@
 static int user_arp_output(user_tcp_manager *tcp, int nif, int opcode,
                            uint32_t dst_ip, unsigned char *dst_haddr, unsigned char *target_haddr);
 
+extern user_tcp_manager *user_get_tcp_manager(void);
+
 struct arppkt
 {
     struct ethhdr eh;
@@ -19,7 +21,6 @@ enum arp_opcode
     arp_op_request = 1,
     arp_op_reply = 2,
 };
-
 
 typedef struct _user_arp_queue_entry
 {
@@ -39,7 +40,6 @@ typedef struct _user_arp_manager
 user_arp_manager global_arp_manager;
 user_arp_table *global_arp_table = NULL;
 
-
 int str2mac(char *mac, char *str)
 {
     char *p = str;
@@ -53,22 +53,26 @@ int str2mac(char *mac, char *str)
         {
             mac[i++] = value;
             value = 0x0;
-        } else
+        }
+        else
         {
 
             unsigned char temp = *p;
             if (temp <= '9' && temp >= '0')
             {
                 temp -= '0';
-            } else if (temp <= 'f' && temp >= 'a')
+            }
+            else if (temp <= 'f' && temp >= 'a')
             {
                 temp -= 'a';
                 temp += 10;
-            } else if (temp <= 'F' && temp >= 'A')
+            }
+            else if (temp <= 'F' && temp >= 'A')
             {
                 temp -= 'A';
                 temp += 10;
-            } else
+            }
+            else
             {
                 break;
             }
@@ -91,7 +95,6 @@ void print_mac(unsigned char *mac)
     printf("%02x", mac[i]);
 }
 
-
 void user_arp_pkt(struct arppkt *arp, struct arppkt *arp_rt, char *hmac)
 {
     memcpy(arp_rt, arp, sizeof(struct arppkt));
@@ -111,11 +114,8 @@ void user_arp_pkt(struct arppkt *arp, struct arppkt *arp_rt, char *hmac)
     arp_rt->arp.dip = arp->arp.sip;
 }
 
-extern user_tcp_manager *user_get_tcp_manager(void);
-
 int user_arp_process_request(struct arphdr *arph)
 {
-
     unsigned char *tmp = GetDestinationHWaddr(arph->sip);
     if (!tmp)
     {
@@ -149,18 +149,19 @@ int user_arp_process_reply(struct arphdr *arph)
         }
     }
     pthread_mutex_unlock(&global_arp_manager.lock);
-
     return 0;
 }
 
 int user_arp_init_table(void)
 {
     global_arp_table = (user_arp_table *) calloc(1, sizeof(user_arp_table));
-    if (!global_arp_table) return -1;
+    if (!global_arp_table)
+        return -1;
 
     global_arp_table->entries = 0;
     global_arp_table->entry = (user_arp_entry *) calloc(MAX_ARPENTRY, sizeof(user_arp_entry));
-    if (!global_arp_table->entry) return -1;
+    if (!global_arp_table->entry)
+        return -1;
 
     TAILQ_INIT(&global_arp_manager.list);
     pthread_mutex_init(&global_arp_manager.lock, NULL);
@@ -171,7 +172,6 @@ int user_arp_init_table(void)
 void user_arp_print_table(void)
 {
     int i = 0;
-
     for (i = 0; i < global_arp_table->entries; i++)
     {
         uint8_t *da = (uint8_t * ) & global_arp_table->entry[i].ip;
@@ -200,15 +200,12 @@ int user_arp_register_entry(uint32_t ip, const unsigned char *haddr)
     int idx = global_arp_table->entries;
     global_arp_table->entry[idx].prefix = 32;
     global_arp_table->entry[idx].ip = ip;
-
     memcpy(global_arp_table->entry[idx].haddr, haddr, ETH_ALEN);
-
     global_arp_table->entry[idx].ip_mask = -1;
     global_arp_table->entry[idx].ip_masked = ip;
-
     global_arp_table->entries = idx + 1;
-
     printf("Learned new arp entry.\n");
+
     user_arp_print_table();
 
     return 0;
@@ -217,7 +214,8 @@ int user_arp_register_entry(uint32_t ip, const unsigned char *haddr)
 static int user_arp_output(user_tcp_manager *tcp, int nif, int opcode,
                            uint32_t dst_ip, unsigned char *dst_haddr, unsigned char *target_haddr)
 {
-    if (!dst_haddr) return -1;
+    if (!dst_haddr)
+        return -1;
 
     struct arphdr *arph = (struct arphdr *) EthernetOutput(tcp, PROTO_ARP, nif, dst_haddr, sizeof(struct arphdr));
     if (!arph) return -1;
@@ -227,7 +225,6 @@ static int user_arp_output(user_tcp_manager *tcp, int nif, int opcode,
     arph->h_addrlen = ETH_ALEN;
     arph->protolen = 4;
     arph->oper = htons(opcode);
-
     arph->sip = USER_SELF_IP_HEX;
     arph->dip = dst_ip;
 
@@ -235,7 +232,8 @@ static int user_arp_output(user_tcp_manager *tcp, int nif, int opcode,
     if (target_haddr)
     {
         memcpy(arph->dmac, target_haddr, arph->h_addrlen);
-    } else
+    }
+    else
     {
         memcpy(arph->dmac, dst_haddr, arph->h_addrlen);
     }
@@ -284,8 +282,8 @@ void user_arp_request(user_tcp_manager *tcp, uint32_t ip, int nif, uint32_t cur_
 
 int user_arp_process(user_nic_context *ctx, unsigned char *stream)
 {
-
-    if (stream == NULL) return -1;
+    if (stream == NULL)
+        return -1;
 
     struct arppkt *arp = (struct arppkt *) stream;
 

@@ -60,10 +60,8 @@ user_socket_map *user_allocate_socket(int socktype, int need_lock)
     return socket;
 }
 
-
 void user_free_socket(int sockid, int need_lock)
 {
-
     user_tcp_manager *tcp = user_get_tcp_manager();
     user_socket_map *socket = &tcp->smap[sockid];
 
@@ -88,7 +86,6 @@ void user_free_socket(int sockid, int need_lock)
     }
 }
 
-
 user_socket_map *user_get_socket(int sockid)
 {
 #if 1
@@ -104,12 +101,10 @@ user_socket_map *user_get_socket(int sockid)
     return socket;
 }
 
-
 /*
  * socket fd need to support 10M, so rebuild socket module.
  * 
  */
-
 #if USER_ENABLE_SOCKET_C10M
 
 struct _user_socket_table * user_socket_allocate_fdtable(void)
@@ -171,27 +166,21 @@ struct _user_socket_table * user_socket_allocate_fdtable(void)
 
         return NULL;
     }
-
     //tcp->fdtable = sock_table;
-
     return sock_table;
 }
-
 
 void user_socket_free_fdtable(struct _user_socket_table *fdtable)
 {
     pthread_spin_destroy(&fdtable->lock);
     free(fdtable->open_fds);
-
 #if (USER_SOCKFD_NR > 1024)
     free_huge_pages(fdtable->sockfds);
 #else
     free(fdtable->sockfds);
 #endif
-
     free(fdtable);
 }
-
 
 /*
  * singleton should use CAS
@@ -216,10 +205,8 @@ struct _user_socket_table * user_socket_init_fdtable(void)
     return user_socket_allocate_fdtable();
 }
 
-
 int user_socket_find_id(unsigned char *fds, int start, size_t max_fds)
 {
-
     size_t i = 0;
     for (i = start;i < max_fds;i ++)
     {
@@ -245,10 +232,8 @@ char user_socket_unuse_id(unsigned char *fds, size_t idx)
 {
     int i = idx / USER_BITS_PER_BYTE;
     int j = idx % USER_BITS_PER_BYTE;
-
     char byte = 0x01 << j;
     fds[i] &= ~byte;
-
     return fds[i];
 }
 
@@ -261,11 +246,8 @@ char user_socket_use_id(unsigned char *fds, size_t idx)
 {
     int i = idx / USER_BITS_PER_BYTE;
     int j = idx % USER_BITS_PER_BYTE;
-
     char byte = 0x01 << j;
-
     fds[i] |= byte;
-
     return fds[i];
 }
 
@@ -280,8 +262,6 @@ struct _user_socket* user_socket_allocate(int socktype)
     }
 
     struct _user_socket_table *sock_table = user_socket_get_fdtable();
-
-
     pthread_spin_lock(&sock_table->lock);
 
     s->id = user_socket_find_id(sock_table->open_fds, sock_table->cur_idx, sock_table->max_fds);

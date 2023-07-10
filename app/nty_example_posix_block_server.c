@@ -5,21 +5,16 @@
 #include <string.h>
 #include <errno.h>
 #include <unistd.h>
-
 #include <netinet/tcp.h>
 #include <arpa/inet.h>
-
 #include <sys/socket.h>
 #include <sys/types.h>
-
 
 #define BUFFER_LENGTH 1024
 
 int main()
 {
-
     user_tcp_setup();
-
     usleep(1);
 
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -81,6 +76,5 @@ int main()
     }
 
     printf("Exit\n");
-
     return 0;
 }

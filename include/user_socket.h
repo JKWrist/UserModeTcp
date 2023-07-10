@@ -1,13 +1,11 @@
 #ifndef __USER_SOCKET_H__
 #define __USER_SOCKET_H__
 
-
 #include "user_buffer.h"
 #include "user_tcp.h"
 #include "user_config.h"
 
 #include <pthread.h>
-
 
 typedef struct _user_socket_map
 {
@@ -51,7 +49,6 @@ user_socket_map *user_get_socket(int sockid);
  * rebuild socket module for support 10M
  */
 #if USER_ENABLE_SOCKET_C10M
-
 
 struct _user_socket
 {
