@@ -40,8 +40,8 @@ int epoll_create(int size)
     }
 
     /**
-	 * 创建 epoll 对象。
-	*/
+     * 创建 epoll 对象。
+    */
     struct eventpoll *ep = (struct eventpoll *)calloc(1, sizeof(struct eventpoll));
     if (!ep)
     {
@@ -52,15 +52,15 @@ int epoll_create(int size)
     ep->rbcnt = 0;
 
     /**
-	 * 红黑树根节点指向 nullptr 。
-	 * ep->rbr.rbh_root = NULL 
-	*/
+     * 红黑树根节点指向 nullptr 。
+     * ep->rbr.rbh_root = NULL
+    */
     RB_INIT(&ep->rbr);
 
     /**
-	 * 双向链表的根节点指向 nullptr 。
-	 * ep->rdlist->lh_first = NULL
-	*/
+     * 双向链表的根节点指向 nullptr 。
+     * ep->rdlist->lh_first = NULL
+    */
     LIST_INIT(&ep->rdlist);
 
     if (pthread_mutex_init(&ep->mtx, NULL))
@@ -151,9 +151,9 @@ int epoll_ctl(int epid, int op, int sockid, struct epoll_event *event)
         return -1;
     }
     /**
-	 * （1）在 epoll 上添加指定 socket 的事件。 
+     * （1）在 epoll 上添加指定 socket 的事件。
      * 使 epoll 对指定的 socket 的事件进行监控。
-	*/
+    */
     if (op == EPOLL_CTL_ADD)
     {
         pthread_mutex_lock(&ep->mtx);
@@ -168,19 +168,19 @@ int epoll_ctl(int epid, int op, int sockid, struct epoll_event *event)
         if (epi)
         {
             /**
-			 * 原来有的节点不能再次插入。
-			*/
+             * 原来有的节点不能再次插入。
+            */
             user_trace_epoll("rbtree is exist\n");
             pthread_mutex_unlock(&ep->mtx);
             return -1;
         }
 
         /**
-		 * 走到这里说明 eventpoll 中的红黑树中的所有节点均没有该 socket 描述符。
-		*/
+         * 走到这里说明 eventpoll 中的红黑树中的所有节点均没有该 socket 描述符。
+        */
         /**
-		 * a、创建一个 epitem 对象，该对象就是红黑树的一个节点。
-		*/
+         * a、创建一个 epitem 对象，该对象就是红黑树的一个节点。
+        */
         epi = (struct epitem *)calloc(1, sizeof(struct epitem));
         if (!epi)
         {
@@ -190,18 +190,18 @@ int epoll_ctl(int epid, int op, int sockid, struct epoll_event *event)
         }
 
         /**
-		 * b、把 socket 保存到该节点中。
-		*/
+         * b、把 socket 保存到该节点中。
+        */
         epi->sockfd = sockid;
 
         /**
-		 * c、将要监控的事件以及其他变量保存到该节点中。
-		*/
+         * c、将要监控的事件以及其他变量保存到该节点中。
+        */
         memcpy(&epi->event, event, sizeof(struct epoll_event));
 
         /**
-		 * d、将这个节点插入到红黑树中。
-		*/
+         * d、将这个节点插入到红黑树中。
+        */
         epi = RB_INSERT(_epoll_rb_socket, &ep->rbr, epi);
         assert(epi == NULL);
         ep->rbcnt++;
@@ -210,8 +210,8 @@ int epoll_ctl(int epid, int op, int sockid, struct epoll_event *event)
     }
 
     /**
-	 * （2）将节点从红黑树中删除。
-	*/
+     * （2）将节点从红黑树中删除。
+    */
     else if (op == EPOLL_CTL_DEL)
     {
         pthread_mutex_lock(&ep->mtx);
@@ -226,11 +226,11 @@ int epoll_ctl(int epid, int op, int sockid, struct epoll_event *event)
             return -1;
         }
         /**
-		 * 只有在红黑树中找到该节点才能走到这里。
-		*/
+         * 只有在红黑树中找到该节点才能走到这里。
+        */
         /**
-		 * 从红黑树中把节点移除。
-		*/
+         * 从红黑树中把节点移除。
+        */
         epi = RB_REMOVE(_epoll_rb_socket, &ep->rbr, epi);
         if (!epi)
         {
@@ -246,8 +246,8 @@ int epoll_ctl(int epid, int op, int sockid, struct epoll_event *event)
     }
 
     /**
-	 * （3）修改红黑树某个节点的内容。
-	*/
+     * （3）修改红黑树某个节点的内容。
+    */
     else if (op == EPOLL_CTL_MOD)
     {
         struct epitem tmp;
@@ -323,9 +323,9 @@ int epoll_wait(int epid, struct epoll_event *events, int maxevents, int timeout)
     }
 
     /**
-	 * 若双向链表中没有相关节点，说明被监控的事件还没有发生。
+     * 若双向链表中没有相关节点，说明被监控的事件还没有发生。
      * 此时的 while 会保持循环，整个函数卡在循环中。
-	*/
+    */
     while (ep->rdnum == 0 && timeout != 0)
     {
         /**
@@ -390,41 +390,41 @@ int epoll_wait(int epid, struct epoll_event *events, int maxevents, int timeout)
     pthread_mutex_unlock(&ep->cdmtx);
 
     /**
-	 * 等一小段时间，等时间到达后，流程来到这里。
-	*/
+     * 等一小段时间，等时间到达后，流程来到这里。
+    */
     pthread_spin_lock(&ep->lock);
 
     int cnt = 0;
     /**
-	 * a、取得事件的数量。
-	 * ep->rdnum，代表双向链表里边的节点数量，也就是有多少个tcp连接来事件了。
-	 * maxevents，这次调用最多可以收集的已经就绪的读写事件的数量。
-	*/
+     * a、取得事件的数量。
+     * ep->rdnum，代表双向链表里边的节点数量，也就是有多少个tcp连接来事件了。
+     * maxevents，这次调用最多可以收集的已经就绪的读写事件的数量。
+    */
     int num = (ep->rdnum > maxevents ? maxevents : ep->rdnum);
     int i = 0;
 
     while (num != 0 && !LIST_EMPTY(&ep->rdlist))
     {
         /**
-		 * b、每次都从双向链表中取一个节点。
-		*/
+         * b、每次都从双向链表中取一个节点。
+        */
         struct epitem *epi = LIST_FIRST(&ep->rdlist);
 
         /**
-		 * c、把这个节点从双向链表中删除。
-		 * 但不影响该节点依旧在红黑树中。
-		*/
+         * c、把这个节点从双向链表中删除。
+         * 但不影响该节点依旧在红黑树中。
+        */
         LIST_REMOVE(epi, rdlink);
 
         /**
-		 * d、标记该节点已经不在双向链表中了。
-		*/
+         * d、标记该节点已经不在双向链表中了。
+        */
         epi->rdy = 0;
 
         /**
-		 * 
-		 * e、将事件标记信息拷贝到提供的 events 参数中。
-		*/
+         *
+         * e、将事件标记信息拷贝到提供的 events 参数中。
+        */
         memcpy(&events[i++], &epi->event, sizeof(struct epoll_event));
 
         num--;
@@ -435,8 +435,8 @@ int epoll_wait(int epid, struct epoll_event *events, int maxevents, int timeout)
     pthread_spin_unlock(&ep->lock);
 
     /**
-	 * f、返回实际发生事件的tcp连接的数量。
-	*/
+     * f、返回实际发生事件的tcp连接的数量。
+    */
     return cnt;
 }
 
@@ -457,10 +457,10 @@ int epoll_event_callback(struct eventpoll *ep, int sockid, uint32_t event)
     tmp.sockfd = sockid;
 
     /**
-	 * （1）根据 socket 找到红黑树中该 socket 对应的节点。
+     * （1）根据 socket 找到红黑树中该 socket 对应的节点。
      * 说明网卡接收到数据之后，会调用该函数查看 epoll 中是否存在监视该 socket  要求，
      * 若存在，则将该事件保存到 epoll 中的双向链表中。
-	*/
+    */
     struct epitem *epi = RB_FIND(_epoll_rb_socket, &ep->rbr, &tmp);
     if (!epi)
     {
@@ -469,39 +469,39 @@ int epoll_event_callback(struct eventpoll *ep, int sockid, uint32_t event)
     }
 
     /**
-	 * （2）判断该节点是否已经在双向链表中。
-	*/
+     * （2）判断该节点是否已经在双向链表中。
+    */
     if (epi->rdy)
     {
         /**
-		 * 若该节点在双向链表中，则将新发生的事件插入到现有的时间标记中。
-		*/
+         * 若该节点在双向链表中，则将新发生的事件插入到现有的时间标记中。
+        */
         epi->event.events |= event;
         return 1;
     }
 
     /**
-	 * 走到这里说明该节点没有在双向链表中，需要将该节点插入到双向链表中。
-	*/
+     * 走到这里说明该节点没有在双向链表中，需要将该节点插入到双向链表中。
+    */
     user_trace_epoll("epoll_event_callback --> %d\n", epi->sockfd);
 
     pthread_spin_lock(&ep->lock);
 
     /**
-	 * （3）标记该节点已经插入到双向链表中了。
-	 * 在 epoll_wait 中，该标志会被置为 0 。
-	*/
+     * （3）标记该节点已经插入到双向链表中了。
+     * 在 epoll_wait 中，该标志会被置为 0 。
+    */
     epi->rdy = 1;
 
     /**
-	 * （4）将该节点插入到双向链表的表头位置。
-	*/
+     * （4）将该节点插入到双向链表的表头位置。
+    */
     LIST_INSERT_HEAD(&ep->rdlist, epi, rdlink);
 
     /**
-	 * （5）双向链表中的节点数量 + 1 。
-	 * 该值在 epoll_wait 中会被 - 1 。
-	*/
+     * （5）双向链表中的节点数量 + 1 。
+     * 该值在 epoll_wait 中会被 - 1 。
+    */
     ep->rdnum++;
     pthread_spin_unlock(&ep->lock);
 

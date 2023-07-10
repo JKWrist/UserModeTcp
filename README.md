@@ -16,6 +16,7 @@ C10M问题(并发C10兆)，在千万并发时，2次拷贝，存在过大的开�
 #### 千万并发解决方案
 
 基于netmap 实现用户态协议栈，netmap接管网卡eth0
+
 - 1、netmap会接管网卡eth0上的数据，直接将网卡上的数据mmap到内存中
 - 2、数据就不会经过内核了，应用层就可以直接从内存中读取数据
 
@@ -38,6 +39,7 @@ netmap, dpdk, pf_ring, Tcp Stack for Userspace
 ### 三、安装教程
 
 #### netmap 安装
+
 ```
 1.  git clone https://gitee.com/xujunze/netmap.git
 2.  ./configure
@@ -47,14 +49,16 @@ netmap, dpdk, pf_ring, Tcp Stack for Userspace
 
 #### netmap 安装中的问题
 
-1.  problem : configure --> /bin/sh^M.
+1. problem : configure --> /bin/sh^M.
+
 ```
 you should run . 
 $ dos2unix configure
 $ dos2unix ./LINUX/configure
 ```
 
-2.  problem : cannot stat 'bridge': No such or directory
+2. problem : cannot stat 'bridge': No such or directory
+
 ```
 $ make clean
 $ cd build-apps/bridge
@@ -65,11 +69,13 @@ $ sudo make && make install
 ### 四、用户态协议栈编译
 
 1. 编译前:
+
 ```
 $ sudo apt-get install libhugetlbfs-dev
 ```
 
 2. 更新 include/user_config.h
+
 ```
 #define USER_SELF_IP		"192.168.0.106" 	//your ip
 #define USER_SELF_IP_HEX	0x6A00A8C0 			//your ip hex.
@@ -77,28 +83,33 @@ $ sudo apt-get install libhugetlbfs-dev
 ```
 
 3. 更新 src/user_eth.c
+
 ```
 int ret = user_nic_init(tctx, "netmap:wlan0");  //your deviece name
 ```
 
 4. 编译:
+
 ```
 $ make
 ```
 
 ### 五、使用说明
+
 1. 阻塞服务端运行:
+
 ```
 $ ./bin/user_example_block_server
 ```
 
 2. epoll 服务端运行:
+
 ```
 $ ./bin/user_example_epoll_rb_server
 ```
 
-
 ### Reference
+
 * [Level-IP](https://github.com/saminiir/level-ip) and [saminiir blog](http://www.saminiir.com/)
 * [Linux kernel TCP/IP stack](https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/net/ipv4)
 * [NtyTcp](https://github.com/wangbojing/NtyTcp)
